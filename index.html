@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpiador de Formato de Texto</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --hover-color: #1d4ed8;
+            --bg-color: #f3f4f6;
+            --border-color: #e5e7eb;
+            --error-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.5;
+            background-color: var(--bg-color);
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 2rem;
+            font-size: 1.875rem;
+        }
+
+        .text-area-container {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .word-count {
+            position: absolute;
+            right: 0;
+            top: 0;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .word-count.error {
+            color: var(--error-color);
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            resize: vertical;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea.error {
+            border-color: var(--error-color);
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .primary-button {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .primary-button:hover {
+            background-color: var(--hover-color);
+        }
+
+        .clear-button {
+            background-color: #9ca3af;
+            color: white;
+        }
+
+        .clear-button:hover {
+            background-color: #6b7280;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 2.5rem;
+            right: 0.5rem;
+            padding: 0.25rem;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .copy-button:hover {
+            background-color: var(--bg-color);
+        }
+
+        .copy-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .credit {
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Limpiador de Formato de Texto</h1>
+        
+        <div class="text-area-container">
+            <label for="input-text">Pega tu texto aquí:</label>
+            <div class="word-count" id="word-counter">0 / 1500 palabras</div>
+            <textarea 
+                id="input-text" 
+                placeholder="Pega aquí el texto que quieres limpiar..."
+                oninput="handleInput(this.value)">
+            </textarea>
+        </div>
+
+        <div class="button-container">
+            <button class="primary-button" onclick="cleanText()">Limpiar Formato</button>
+            <button class="clear-button" onclick="clearText()">Borrar Todo</button>
+        </div>
+
+        <div class="text-area-container">
+            <label for="output-text">Texto limpio:</label>
+            <textarea id="output-text" readonly placeholder="El texto limpio aparecerá aquí..."></textarea>
+            <button class="copy-button" onclick="copyToClipboard()" title="Copiar al portapapeles">
+                <svg class="copy-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <footer>
+            <span class="credit">BY: RLAND with CLAUDE</span>
+        </footer>
+    </div>
+
+    <script>
+        function countWords(str) {
+            return str.trim().split(/\s+/).filter(word => word.length > 0).length;
+        }
+
+        function handleInput(text) {
+            const wordCount = countWords(text);
+            const wordCounter = document.getElementById('word-counter');
+            const inputTextarea = document.getElementById('input-text');
+            
+            wordCounter.textContent = `${wordCount} / 1500 palabras`;
+            
+            if (wordCount > 1500) {
+                wordCounter.classList.add('error');
+                inputTextarea.classList.add('error');
+            } else {
+                wordCounter.classList.remove('error');
+                inputTextarea.classList.remove('error');
+            }
+
+            // Sincronizar con el área de salida si está vacía
+            const outputText = document.getElementById('output-text');
+            if (!outputText.value) {
+                cleanText();
+            }
+        }
+
+        function cleanText() {
+            const inputText = document.getElementById('input-text').value;
+            
+            if (countWords(inputText) > 1500) {
+                alert('El texto excede el límite de 1500 palabras');
+                return;
+            }
+            
+            // Proceso de limpieza
+            let cleaned = inputText
+                // Elimina saltos de línea múltiples y los reemplaza por un espacio
+                .replace(/\n+/g, ' ')
+                // Elimina espacios múltiples
+                .replace(/\s+/g, ' ')
+                // Elimina espacios al inicio y final
+                .trim()
+                // Normaliza los guiones
+                .replace(/[\u2010-\u2015]/g, '-')
+                // Normaliza las comillas
+                .replace(/[\u201C-\u201D]/g, '"')
+                // Normaliza los apóstrofes
+                .replace(/[\u2018-\u2019]/g, "'");
+            
+            document.getElementById('output-text').value = cleaned;
+        }
+
+        function clearText() {
+            document.getElementById('input-text').value = '';
+            document.getElementById('output-text').value = '';
+            document.getElementById('word-counter').textContent = '0 / 1500 palabras';
+            document.getElementById('word-counter').classList.remove('error');
+            document.getElementById('input-text').classList.remove('error');
+        }
+
+        async function copyToClipboard() {
+            const outputText = document.getElementById('output-text');
+            
+            try {
+                await navigator.clipboard.writeText(outputText.value);
+                alert('¡Texto copiado al portapapeles!');
+            } catch (err) {
+                alert('Error al copiar el texto. Por favor, cópialo manualmente.');
+                console.error('Error al copiar al portapapeles:', err);
+            }
+        }
+
+        // Limpiar los textareas al cargar la página
+        window.onload = clearText;
+    </script>
+</body>
+</html>
