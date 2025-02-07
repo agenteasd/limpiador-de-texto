@@ -122,25 +122,6 @@
             background-color: #6b7280;
         }
 
-        .copy-button {
-            position: absolute;
-            top: 2.5rem;
-            right: 0.5rem;
-            padding: 0.25rem;
-            background-color: white;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-        }
-
-        .copy-button:hover {
-            background-color: var(--bg-color);
-        }
-
-        .copy-icon {
-            width: 20px;
-            height: 20px;
-        }
-
         footer {
             text-align: center;
             margin-top: 2rem;
@@ -186,11 +167,6 @@
         <div class="text-area-container">
             <label for="output-text">Texto limpio:</label>
             <textarea id="output-text" readonly placeholder="El texto limpio aparecerá aquí..."></textarea>
-            <button class="copy-button" onclick="copyToClipboard()" title="Copiar al portapapeles">
-                <svg class="copy-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                </svg>
-            </button>
         </div>
 
         <footer>
@@ -257,18 +233,6 @@
             document.getElementById('word-counter').textContent = '0 / 1500 palabras';
             document.getElementById('word-counter').classList.remove('error');
             document.getElementById('input-text').classList.remove('error');
-        }
-
-        async function copyToClipboard() {
-            const outputText = document.getElementById('output-text');
-            
-            try {
-                await navigator.clipboard.writeText(outputText.value);
-                alert('¡Texto copiado al portapapeles!');
-            } catch (err) {
-                alert('Error al copiar el texto. Por favor, cópialo manualmente.');
-                console.error('Error al copiar al portapapeles:', err);
-            }
         }
 
         // Limpiar los textareas al cargar la página
